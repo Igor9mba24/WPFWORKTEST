@@ -1,0 +1,130 @@
+﻿<Window x:Class="WPFWORKTEST.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WPFWORKTEST"
+        xmlns:viewModels="clr-namespace:WPFWORKTEST.ViewModels" 
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Window.DataContext>
+        <viewModels:MainViewModel/>
+    </Window.DataContext>
+    <Window.Resources>
+        <!-- Стиль для ComboBox -->
+        <Style TargetType="ComboBox">
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+        <!-- Стиль для ComboBoxItem -->
+        <Style TargetType="ComboBoxItem">
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+        <!-- Правило валидации для числовых значений -->
+    </Window.Resources>
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Выбор функции -->
+        <Label Grid.Row="0" Content="Выберите функцию:"/>
+        <ComboBox Grid.Row="0" Margin="5" Width="150" ItemsSource="{Binding FunctionTypes}" SelectedItem="{Binding SelectedFunction}" SelectionChanged="ComboBox_SelectionChanged"
+              HorizontalAlignment="Center"/>
+
+
+        <!-- Ввод коэффициентов a и b -->
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="5">
+            <Label Content="Коэффициент a:"/>
+            <TextBox Width="100" Margin="5">
+                <i:Interaction.Behaviors>
+                    <local:NumericInputOnlyBehavior/>
+                </i:Interaction.Behaviors>
+                <TextBox.Text>
+                    <Binding Path="CoefficientA" UpdateSourceTrigger="PropertyChanged">
+                        <Binding.ValidationRules>
+                            <ExceptionValidationRule/>
+                        </Binding.ValidationRules>
+                    </Binding>
+                </TextBox.Text>
+            </TextBox>
+            <Label Content="Коэффициент b:"/>
+            <TextBox Width="100" Margin="5">
+                <i:Interaction.Behaviors>
+                    <local:NumericInputOnlyBehavior/>
+                </i:Interaction.Behaviors>
+                <TextBox.Text>
+                    <Binding Path="CoefficientB" UpdateSourceTrigger="PropertyChanged" ValidatesOnDataErrors="True">
+                        <Binding.ValidationRules>
+                            <ExceptionValidationRule/>
+                        </Binding.ValidationRules>
+                    </Binding>
+                </TextBox.Text>
+            </TextBox>
+        </StackPanel>
+
+        <!-- Выбор коэффициента c -->
+        <Label Grid.Row="2" Content="Выберите коэффициент c:"/>
+        <ComboBox Grid.Row="2" Margin="5" Width="150" ItemsSource="{Binding CoefficientCList}" SelectedItem="{Binding SelectedCoefficientC}"  SelectionChanged="ComboBox_SelectionChanged_1"/>
+        <!-- Кнопка добавления строки -->
+        <Button Grid.Row="3" Margin="10,10,0,0" Content="Добавить строку" Command="{Binding AddRowCommand}" HorizontalAlignment="Left" VerticalAlignment="Top" MinWidth="200" MinHeight="30"/>
+        
+        <!-- Таблица для значений f(x, y), x, y -->
+        <DataGrid Grid.Row="4" Margin="5,65,5,5" AutoGenerateColumns="False" ItemsSource="{Binding FunctionValues}" SelectionChanged="DataGrid_SelectionChanged" CanUserAddRows="False">
+            <DataGrid.Columns>
+                <!-- Привязка колонки "f(x, y)" к свойству Fxy объекта FunctionData -->
+                <DataGridTextColumn Header="f(x, y)" Width="*" Binding="{Binding Fxy}" IsReadOnly="True"/>
+                <!-- Привязка колонки "x" к свойству X объекта FunctionData -->
+                <DataGridTextColumn Header="x" Width="*">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="{x:Type TextBlock}">
+                            <Setter Property="TextAlignment" Value="Right"/>
+                            
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                    <DataGridTextColumn.EditingElementStyle>
+                        <Style TargetType="{x:Type TextBox}">
+                            <Setter Property="TextAlignment" Value="Right"/>
+                            <Setter Property="InputScope" Value="Number"/>
+                        </Style>
+                    </DataGridTextColumn.EditingElementStyle>
+                    <DataGridTextColumn.Binding>
+                        <Binding Path="X" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged">
+                            <Binding.ValidationRules>
+                                <ExceptionValidationRule/>
+                            </Binding.ValidationRules>
+                        </Binding>
+                    </DataGridTextColumn.Binding>
+                </DataGridTextColumn>
+                <!-- Привязка колонки "y" к свойству Y объекта FunctionData -->
+                <DataGridTextColumn Header="y" Width="*">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="{x:Type TextBlock}">
+                            <Setter Property="TextAlignment" Value="Right"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                    <DataGridTextColumn.EditingElementStyle>
+                        <Style TargetType="{x:Type TextBox}">
+                            <Setter Property="TextAlignment" Value="Right"/>
+                            <Setter Property="InputScope" Value="Number"/>
+                        </Style>
+                    </DataGridTextColumn.EditingElementStyle>
+                    <DataGridTextColumn.Binding>
+                        <Binding Path="Y" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged">
+                            <Binding.ValidationRules>
+                                <ExceptionValidationRule/>
+                            </Binding.ValidationRules>
+                        </Binding>
+                    </DataGridTextColumn.Binding>
+                </DataGridTextColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</Window>
